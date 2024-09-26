@@ -104,11 +104,11 @@ public class RamSimManager {
         HashMap<String, ShortRamSimInfo> ramSimInfos = new HashMap<>();
         for (String key : ramSims.keySet()) {
             ByteMapRamInfo ramInfo = (ByteMapRamInfo) ramSims.get(key).getRamInfo();
-            ramSimInfos.put(key, new ShortRamSimInfo( ramInfo.getRamSize(), ramInfo.getBiteMapSize(), ramInfo.getFreeRam(), ramInfo.getUsedRam()));
+            ramSimInfos.put(key, new ShortRamSimInfo( ramInfo.getRamSize(), ramInfo.getBlockSize(), ramInfo.getFreeRam(), ramInfo.getUsedRam()));
         }
         return ramSimInfos;
     }
 
-    public record ShortRamSimInfo(int ramSize, int biteMapSize, int freeMemory, int usedMemory) {}
+    public record ShortRamSimInfo(int ramSize, int blockSize, int freeMemory, int usedMemory) {}
 
 }

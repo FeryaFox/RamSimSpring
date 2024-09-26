@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/ram_sim
+      - SPRING_DATASOURCE_USERNAME=ram_sim_user
+      - SPRING_DATASOURCE_PASSWORD=123
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=ram_sim
+      - POSTGRES_USER=ram_sim_user
+      - POSTGRES_PASSWORD=123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
