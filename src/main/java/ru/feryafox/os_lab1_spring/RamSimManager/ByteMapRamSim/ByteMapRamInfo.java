@@ -10,12 +10,17 @@ import java.util.ArrayList;
 public class ByteMapRamInfo extends RamInfo {
     protected int byteMapSize;
     protected int availableMemory;
+    protected int blockSize;
 
-
-    public ByteMapRamInfo(int ramSize, ArrayList<BlockInfo> ramInfo, int freeRam, int usedRam, int byteMapSize, int availableMemory) {
+    public ByteMapRamInfo(int ramSize, ArrayList<BlockInfo> ramInfo, int freeRam, int usedRam, int byteMapSize, int availableMemory, int blockSize) {
         super(ramSize, ramInfo, freeRam, usedRam);
         this.byteMapSize = byteMapSize;
         this.availableMemory = availableMemory;
+        this.blockSize = blockSize;
+    }
+
+    public int getBlockSize() {
+        return blockSize;
     }
 
     public int getByteMapSize() {
@@ -29,6 +34,7 @@ public class ByteMapRamInfo extends RamInfo {
     public static class Builder extends RamInfo.Builder {
         protected int byteMapSize;
         protected int availableMemory;
+        protected int blockSize;
 
         public Builder setAvailableMemory(int availableMemory) {
             this.availableMemory = availableMemory;
@@ -40,8 +46,13 @@ public class ByteMapRamInfo extends RamInfo {
             return this;
         }
 
+        public Builder setBlockSize(int blockSize) {
+            this.blockSize = blockSize;
+            return this;
+        }
+
         public ByteMapRamInfo build() {
-            return new ByteMapRamInfo(ramSize, ramInfo, freeRam, usedRam, byteMapSize, availableMemory);
+            return new ByteMapRamInfo(ramSize, ramInfo, freeRam, usedRam, byteMapSize, availableMemory, blockSize);
         }
     }
 }

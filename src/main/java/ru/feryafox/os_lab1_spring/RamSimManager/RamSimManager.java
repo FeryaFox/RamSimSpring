@@ -23,4 +23,24 @@ public class RamSimManager {
 
         return uuid;
     }
+
+    public HashMap<String, RamSimBase> getRamSims() {
+        return ramSims;
+    }
+
+    public void deleteRamSim(String uuid) {
+        ramSims.remove(uuid);
+    }
+
+    public RamSimBase getRamSim(String uuid) {
+        return ramSims.get(uuid);
+    }
+
+    public boolean isRamSimExist(String uuid) {
+        return ramSims.containsKey(uuid);
+    }
+
+    public int allocateMemory(String uuid, int sizeMemoryToAllocate, int processId) {
+        return ramSims.get(uuid).allocateMemory((byte) sizeMemoryToAllocate, (byte) processId);
+    }
 }

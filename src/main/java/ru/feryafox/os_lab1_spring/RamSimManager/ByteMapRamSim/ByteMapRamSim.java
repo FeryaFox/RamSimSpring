@@ -151,6 +151,7 @@ public class ByteMapRamSim implements RamSimBase {
         builder.setUsedRam(usedRam);
         builder.setByteMapSize(calculateByteMapSize());
         builder.setAvailableMemory(RAM_SIZE - calculateByteMapSize());
+        builder.setBlockSize(BLOCK_SIZE);
 
         ArrayList<BlockInfo> blockInfos = new ArrayList<>();
 
