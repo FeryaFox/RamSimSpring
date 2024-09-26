@@ -17,11 +17,11 @@ public class RamSimController {
         this.ramSimManager = ramSimManager;
     }
 
-    @PostMapping("/create_ram_sim")
+    @PostMapping("/ram_sim")
     @ResponseBody
     public String createRamSim(@RequestParam Integer ramSize, @RequestParam Integer blockSize) {
-        System.out.println(ramSize);
-        System.out.println(blockSize);
-        return "Hello World";
+        String uuid = ramSimManager.createRamSim(ramSize, blockSize);
+        return uuid;
     }
+
 }
