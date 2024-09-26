@@ -28,6 +28,12 @@ public class ByteMapRamSim implements RamSimBase {
         ram = new byte[RAM_SIZE];
     }
 
+    public ByteMapRamSim(ByteMapRamSimSettings settings, byte[] ram) {
+        RAM_SIZE = settings.RamSize();
+        BLOCK_SIZE = settings.BlockSize();
+        this.ram = ram;
+    }
+
     public int allocateMemory(int sizeMemoryToAllocate, int processId) {
         return allocateMemory((byte) sizeMemoryToAllocate, (byte) processId);
     }
@@ -143,13 +149,16 @@ public class ByteMapRamSim implements RamSimBase {
         int freeRam = 0;
         int usedRam = 0;
 
+        int realBlockCount = DoubleUtils.divWithCeil(RAM_SIZE - calculateByteMapSize(), BLOCK_SIZE);
+        int stepedBlockCount = 0;
+
         for (int i = 0; i < calculateByteMapSize(); i++) {
             for (int j = 7; j >= 0; j--) {
+                if (stepedBlockCount >= realBlockCount) break;
                 if (ByteUtils.getBit(ram[i], j) == 0) freeRam += BLOCK_SIZE;
-                if (ByteUtils.getBit(ram[j], j) == 1) usedRam += BLOCK_SIZE;
+                if (ByteUtils.getBit(ram[i], j) == 1) usedRam += BLOCK_SIZE;
             }
         }
-
         freeRam -= calculateByteMapSize();
 
         builder.setFreeRam(freeRam);
