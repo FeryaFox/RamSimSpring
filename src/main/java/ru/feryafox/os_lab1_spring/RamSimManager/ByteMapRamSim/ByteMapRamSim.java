@@ -1,13 +1,9 @@
 package ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim;
 
-
-
 import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.RamSimSettings.ByteMapRamSimSettings;
 import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.Utils.ByteUtils;
-import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.Exceptions.IndexToClearIsOutOfRange;
-import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.Exceptions.NotEnoughMemoryToAllocate;
-import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.Exceptions.TryToClearForeignBlock;
-import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.Exceptions.TryToClearSystemInfo;
+import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.Utils.DoubleUtils;
+import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.Exceptions.*;
 import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.RamInfo.BlockInfo;
 import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.RamSimBase;
 
@@ -37,13 +33,19 @@ public class ByteMapRamSim implements RamSimBase {
     }
 
     public int allocateMemory(byte sizeMemoryToAllocate, byte processId) {
+
+
+        if (sizeMemoryToAllocate <= 0) throw new WrongMemorySize();
+        if (processId <= 0) throw new WrongProcessIdParam();
+
         int sizeMemoryToAllocateWithSystemInfo = sizeMemoryToAllocate + 8 * 2;
 
         int systemInfoSize = calculateByteMapSize();
 
         int availableMemoryAtMoment = 0;
         int availableMemoryAtMomentAddress = systemInfoSize;
-        int neededBlocks = sizeMemoryToAllocateWithSystemInfo / BLOCK_SIZE;
+
+        int neededBlocks = DoubleUtils.divWithCeil(sizeMemoryToAllocateWithSystemInfo, BLOCK_SIZE);
         int startedBlock = 0;
 
         for (int i = 0; i < systemInfoSize; i++) {
@@ -51,9 +53,10 @@ public class ByteMapRamSim implements RamSimBase {
                 int bit = ByteUtils.getBit(ram[i], j);
 
                 if (bit == 1) {
+                    availableMemoryAtMomentAddress += (availableMemoryAtMoment == 0) ? BLOCK_SIZE : availableMemoryAtMoment;
+                    startedBlock += (availableMemoryAtMoment == 0) ? 1 : availableMemoryAtMoment / BLOCK_SIZE;
                     availableMemoryAtMoment = 0;
-                    availableMemoryAtMomentAddress += BLOCK_SIZE;
-                    startedBlock++;
+
                     continue;
                 }
 
@@ -76,18 +79,20 @@ public class ByteMapRamSim implements RamSimBase {
     }
 
     public void clearMemory(byte sizeMemoryToClear, byte processId, int startedAddress) {
+        if (sizeMemoryToClear <= 0) throw new WrongMemorySize();
+        if (processId <= 0) throw new WrongProcessIdParam();
 
-        if (ram[startedAddress - 1] != sizeMemoryToClear) throw new IndexToClearIsOutOfRange();
         if (startedAddress < 0 || startedAddress > RAM_SIZE ) throw new IndexToClearIsOutOfRange();
         if (startedAddress < calculateByteMapSize()) throw new TryToClearSystemInfo();
+        if (ram[startedAddress - 1] != sizeMemoryToClear) throw new IndexToClearIsOutOfRange();
         if (ram[startedAddress - 2] != processId) throw new TryToClearForeignBlock();
 
         ram[startedAddress - 1] = 0;
         ram[startedAddress - 2] = 0;
 
         int c = 0;
-        int startedClear = (startedAddress - 2) / BLOCK_SIZE - calculateByteMapSize() / BLOCK_SIZE;
-        int busyBlocks = (sizeMemoryToClear + 8 * 2 ) / BLOCK_SIZE;
+        int startedClear = DoubleUtils.divWithCeil((startedAddress - 2), BLOCK_SIZE) - DoubleUtils.divWithCeil(calculateByteMapSize(), BLOCK_SIZE);
+        int busyBlocks = DoubleUtils.divWithCeil((sizeMemoryToClear + 8 * 2 ), BLOCK_SIZE);
         int clearBlocks = 0;
 
         for (int i = 0; i < calculateByteMapSize(); i++) {
@@ -159,9 +164,7 @@ public class ByteMapRamSim implements RamSimBase {
             if (ram[i] == 0) continue;
             blockInfos.add(new BlockInfo(ram[i], ram[i + 1], i + 2));
 
-            int t = ( ram[i + 1] + 8 * 2 ) / BLOCK_SIZE;
-
-            i += ( ram[i + 1] + 8 * 2 ) / BLOCK_SIZE * 8 - 1;
+            i += DoubleUtils.divWithCeil( ram[i + 1] + 8 * 2 , BLOCK_SIZE * 8 ) - 1;
         }
 
         builder.setRamInfo(blockInfos);

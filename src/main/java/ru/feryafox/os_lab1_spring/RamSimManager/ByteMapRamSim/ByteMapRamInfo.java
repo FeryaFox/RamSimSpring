@@ -23,7 +23,7 @@ public class ByteMapRamInfo extends RamInfo {
         return blockSize;
     }
 
-    public int getByteMapSize() {
+    public int getBiteMapSize() {
         return byteMapSize;
     }
 
