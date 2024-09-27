@@ -40,8 +40,8 @@ public class RamSimController {
 
     @GetMapping("/ram_sim/{ramSimUUID}")
     @ResponseBody
-    public RamSimBase getRamSim(@PathVariable String ramSimUUID) {
-        return ramSimManager.getRamSim(ramSimUUID);
+    public RamSimManager.LongRamSimInfo getRamSim(@PathVariable String ramSimUUID) {
+        return ramSimManager.getLongRamSimInfo(ramSimUUID);
     }
 
     @PostMapping("/ram_sim/{ramSimUUID}/allocate_memory")

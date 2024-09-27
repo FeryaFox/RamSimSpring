@@ -7,10 +7,12 @@ import org.springframework.web.context.annotation.ApplicationScope;
 import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.ByteMapRamInfo;
 import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.ByteMapRamSim;
 import ru.feryafox.os_lab1_spring.RamSimManager.ByteMapRamSim.RamSimSettings.ByteMapRamSimSettings;
+import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.RamInfo.BlockInfo;
 import ru.feryafox.os_lab1_spring.RamSimManager.RamSimBase.RamSimBase;
 import ru.feryafox.os_lab1_spring.models.RamSimEntity;
 import ru.feryafox.os_lab1_spring.repositories.RamSimRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.HashMap;
@@ -72,6 +74,22 @@ public class RamSimManager {
         return ramSims.get(uuid);
     }
 
+    public LongRamSimInfo getLongRamSimInfo(String uuid) {
+        ByteMapRamSim ramSim = (ByteMapRamSim) ramSims.get(uuid);
+        ByteMapRamInfo ramInfo = ramSim.getRamInfo();
+
+        return new LongRamSimInfo(
+                ramInfo.getRamSize(),
+                ramInfo.getRamInfo(),
+                ramInfo.getFreeRam(),
+                ramInfo.getUsedRam(),
+                ramInfo.getBiteMapSize(),
+                ramInfo.getAvailableMemory(),
+                ramInfo.getBlockSize(),
+                toByteList(ramSim.getRam())
+        );
+    }
+
     public boolean isRamSimExist(String uuid) {
         return ramSims.containsKey(uuid);
     }
@@ -110,5 +128,16 @@ public class RamSimManager {
     }
 
     public record ShortRamSimInfo(int ramSize, int blockSize, int freeMemory, int usedMemory) {}
+
+    public record LongRamSimInfo(int ramSize, ArrayList<BlockInfo> processes, int freeRam, int usedRam, int byteMapSize, int availableMemory, int blockSize, ArrayList<Byte> ram) {};
+
+
+    private static ArrayList<Byte> toByteList(byte[] byteArray) {
+        ArrayList<Byte> byteList = new ArrayList<>();
+        for (byte b : byteArray) {
+            byteList.add(b);
+        }
+        return byteList;
+    }
 
 }
