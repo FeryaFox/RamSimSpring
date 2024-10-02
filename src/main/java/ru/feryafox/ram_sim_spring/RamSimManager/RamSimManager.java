@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Component
@@ -78,6 +80,14 @@ public class RamSimManager {
         ByteMapRamSim ramSim = (ByteMapRamSim) ramSims.get(uuid);
         ByteMapRamInfo ramInfo = ramSim.getRamInfo();
 
+        byte[] ramByte = ramSim.getRam();
+
+        ArrayList<Byte> ram = new ArrayList<>(
+                IntStream.range(0, ramByte.length)
+                        .mapToObj(i -> ramByte[i])
+                        .collect(Collectors.toList())
+        );
+
         return new LongRamSimInfo(
                 ramInfo.getRamSize(),
                 ramInfo.getRamInfo(),
@@ -86,7 +96,7 @@ public class RamSimManager {
                 ramInfo.getBiteMapSize(),
                 ramInfo.getAvailableMemory(),
                 ramInfo.getBlockSize(),
-                ramSim.getRam()
+                ram
         );
     }
 
@@ -129,5 +139,5 @@ public class RamSimManager {
 
     public record ShortRamSimInfo(int ramSize, int blockSize, int freeMemory, int usedMemory) {}
 
-    public record LongRamSimInfo(int ramSize, ArrayList<BlockInfo> processes, int freeRam, int usedRam, int byteMapSize, int availableMemory, int blockSize, byte[] ram) {};
+    public record LongRamSimInfo(int ramSize, ArrayList<BlockInfo> processes, int freeRam, int usedRam, int byteMapSize, int availableMemory, int blockSize, ArrayList<Byte> ram) {};
 }
